@@ -49,23 +49,10 @@ class Anonymizer:
     def anonymize_images(self, input_path, output_path, detection_thresholds, file_types, write_json):
         print(f'Anonymizing images in {input_path} and saving the anonymized images to {output_path}...')
 
-        Path(output_path).mkdir(exist_ok=True)
-        assert Path(output_path).is_dir(), 'Output path must be a directory'
-
-        files = []
-        for file_type in file_types:
-            files.extend(list(Path(input_path).glob(f'**/*.{file_type}')))
-
-        for input_image_path in tqdm(files):
-            # Create output directory
-            relative_path = input_image_path.relative_to(input_path)
-            (Path(output_path) / relative_path.parent).mkdir(exist_ok=True, parents=True)
-            output_image_path = Path(output_path) / relative_path
-            output_detections_path = (Path(output_path) / relative_path).with_suffix('.json')
 
             # Anonymize image
-            image = load_np_image(str(input_image_path))
+            image = load_np_image(str(input_path))
             anonymized_image, detections = self.anonymize_image(image=image, detection_thresholds=detection_thresholds)
-            save_np_image(image=anonymized_image, image_path=str(output_image_path))
+            save_np_image(image=anonymized_image, image_path=str(output_path))
             if write_json:
                 save_detections(detections=detections, detections_path=str(output_detections_path))
